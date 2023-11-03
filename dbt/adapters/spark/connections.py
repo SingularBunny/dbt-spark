@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from urllib.parse import urlparse
 
 import dbt.exceptions
 from dbt.adapters.base import Credentials
@@ -452,8 +453,10 @@ class SparkConnectionManager(SQLConnectionManager):
                             configuration=creds.server_side_parameters,
                         )
                     else:
+                        parsed_url = urlparse(creds.host)
                         conn = hive.connect(
-                            host=creds.host,
+                            scheme=parsed_url.scheme,
+                            host=parsed_url.hostname,
                             port=creds.port,
                             username=creds.user,
                             auth=creds.auth,
